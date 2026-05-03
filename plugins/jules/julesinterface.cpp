@@ -15,12 +15,11 @@ JulesInterface::JulesInterface(Account *account, KConfigGroup config)
     , m_config(config)
     , m_account(account)
 {
-    QDBusConnection::sessionBus().registerObject(account->objectPath(), account, QDBusConnection::ExportAdaptors);
 }
 
 QString JulesInterface::token() const
 {
-    if (!m_account->hasAccess()) {
+    if (!m_account->currentCallerHasAccess()) {
         return {};
     }
 

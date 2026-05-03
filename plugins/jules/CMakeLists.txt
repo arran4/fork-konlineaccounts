@@ -10,6 +10,7 @@ target_link_libraries(jules
     KOnlineAccounts
     Qt::DBus
     KF6::CoreAddons
+    KF6::ConfigCore
 )
 
 install(TARGETS jules DESTINATION ${KDE_INSTALL_PLUGINDIR}/konlineaccounts)
