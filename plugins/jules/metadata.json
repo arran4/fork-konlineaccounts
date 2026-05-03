@@ -1,0 +1,9 @@
+{
+    "KPlugin": {
+        "Icon": "internet-services",
+        "Name": "Jules",
+        "Description": "Access Jules token-based auth"
+    },
+    "X-KOnlineAccounts-SetupModule": "org.kde.konlineaccounts.jules",
+    "X-KOnlineAccounts-Provides": ["jules"]
+}
