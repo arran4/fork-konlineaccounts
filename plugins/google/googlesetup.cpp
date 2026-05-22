@@ -27,6 +27,7 @@ QList<QUrl> googleScopes()
         KGAPI2::Account::calendarEventsScopeUrl(),
         KGAPI2::Account::peopleScopeUrl(),
         KGAPI2::Account::tasksScopeUrl(),
+        QUrl(QStringLiteral("https://www.googleapis.com/auth/photoslibrary.readonly")),
     };
 };
 
