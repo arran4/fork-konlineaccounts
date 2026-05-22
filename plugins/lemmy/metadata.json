@@ -1,0 +1,9 @@
+{
+    "KPlugin": {
+        "Icon": "im-lemmy",
+        "Name": "Lemmy",
+        "Description": "Access Lemmy"
+    },
+    "X-KOnlineAccounts-SetupModule": "org.kde.konlineaccounts.lemmy",
+    "X-KOnlineAccounts-Provides": ["lemmy"]
+}
