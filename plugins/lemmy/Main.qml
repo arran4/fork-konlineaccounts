@@ -21,6 +21,13 @@ SetupItem {
         id: lemmy
 
         builder: root.builder
+
+        onBuilderChanged: {
+            if (lemmy.builder) {
+                lemmy.builder.finished.connect(() => busy.running = false)
+                lemmy.builder.failed.connect(() => busy.running = false)
+            }
+        }
     }
 
     ColumnLayout {
@@ -34,19 +41,19 @@ SetupItem {
 
             Controls.TextField {
                 id: instance
-                placeholderText: "https://lemmy.kde.org"
-                Kirigami.FormData.label: "Instance URL:"
+                placeholderText: i18n("https://lemmy.kde.org")
+                Kirigami.FormData.label: i18n("Instance URL:")
             }
 
             Controls.TextField {
                 id: username
-                Kirigami.FormData.label: "Username:"
+                Kirigami.FormData.label: i18n("Username:")
             }
 
             Controls.TextField {
                 id: password
                 echoMode: TextInput.Password
-                Kirigami.FormData.label: "Password:"
+                Kirigami.FormData.label: i18n("Password:")
             }
 
             Controls.BusyIndicator {
@@ -57,9 +64,9 @@ SetupItem {
         }
 
         Controls.Button {
-            text: "Add"
+            text: i18n("Add")
 
-            enabled: !busy.running
+            enabled: !busy.running && instance.text.length > 0 && username.text.length > 0 && password.text.length > 0
 
             Layout.alignment: Qt.AlignRight
 

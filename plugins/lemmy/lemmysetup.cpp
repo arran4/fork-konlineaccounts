@@ -37,12 +37,13 @@ void LemmySetup::registerLemmy(const QString &instanceUrl, const QString &userna
 
 QCoro::Task<void> LemmySetup::doRegisterLemmy(const QString &_instanceUrl, const QString &username, const QString &password)
 {
-    QString instanceUrl = _instanceUrl;
+    QString instanceUrl = _instanceUrl.trimmed();
     if (!instanceUrl.startsWith(u"http://") && !instanceUrl.startsWith(u"https://")) {
         instanceUrl.prepend(u"https://");
     }
 
-    const QUrl loginUrl = QUrl(instanceUrl + u"/api/v3/user/login");
+    QUrl loginUrl = QUrl::fromUserInput(instanceUrl);
+    loginUrl.setPath(u"/api/v3/user/login"_s);
     const QJsonObject obj{
         {QStringLiteral("username_or_email"), username},
         {QStringLiteral("password"), password},
@@ -68,9 +69,16 @@ QCoro::Task<void> LemmySetup::doRegisterLemmy(const QString &_instanceUrl, const
     loginReply->deleteLater();
     nam->deleteLater();
 
-    QJsonDocument replyDoc = QJsonDocument::fromJson(loginReplyData);
+    QJsonParseError parseError;
+    QJsonDocument replyDoc = QJsonDocument::fromJson(loginReplyData, &parseError);
 
-    const QString accessToken = replyDoc[u"jwt"].toString();
+    if (parseError.error != QJsonParseError::NoError || !replyDoc.isObject() || !replyDoc.object().contains(u"jwt")) {
+        qCWarning(LOG_KONLINEACCOUNTS_LEMMY) << "Invalid JSON response or missing JWT token";
+        m_builder->fail(i18n("Invalid server response"));
+        co_return;
+    }
+
+    const QString accessToken = replyDoc.object()[u"jwt"].toString();
 
     auto lemmyGroup = m_builder->config().group(u"Lemmy"_s);
     lemmyGroup.writeEntry("instanceUrl", instanceUrl);

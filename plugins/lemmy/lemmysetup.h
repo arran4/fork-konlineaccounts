@@ -32,5 +32,5 @@ public:
 private:
     QCoro::Task<void> doRegisterLemmy(const QString &instanceUrl, const QString &username, const QString &password);
 
-    AccountBuilder *m_builder;
+    AccountBuilder *m_builder = nullptr;
 };
