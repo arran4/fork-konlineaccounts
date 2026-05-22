@@ -4,3 +4,4 @@
 add_subdirectory(nextcloud)
 add_subdirectory(mastodon)
 add_subdirectory(google)
+add_subdirectory(openaicompatible)
