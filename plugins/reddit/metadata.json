@@ -1,0 +1,9 @@
+{
+    "KPlugin": {
+        "Icon": "reddit_microblog",
+        "Name": "Reddit",
+        "Description": "Access Reddit"
+    },
+    "X-KOnlineAccounts-SetupModule": "org.kde.konlineaccounts.reddit",
+    "X-KOnlineAccounts-Provides": ["reddit"]
+}
