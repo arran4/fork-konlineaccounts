@@ -36,13 +36,13 @@ SetupItem {
                 id: instance
                 placeholderText: "https://api.openai.com"
                 text: "https://api.openai.com"
-                Kirigami.FormData.label: "Instance URL:"
+                Kirigami.FormData.label: i18n("Instance URL:")
             }
 
             Controls.TextField {
                 id: token
                 echoMode: TextInput.Password
-                Kirigami.FormData.label: "Token:"
+                Kirigami.FormData.label: i18n("Token:")
             }
 
             Controls.BusyIndicator {
@@ -53,9 +53,9 @@ SetupItem {
         }
 
         Controls.Button {
-            text: "Add"
+            text: i18n("Add")
 
-            enabled: !busy.running
+            enabled: !busy.running && token.text.length > 0
 
             Layout.alignment: Qt.AlignRight
 

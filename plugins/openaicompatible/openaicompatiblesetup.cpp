@@ -29,6 +29,10 @@ OpenAICompatibleSetup::OpenAICompatibleSetup(QObject *parent)
 
 void OpenAICompatibleSetup::registerOpenAICompatible(const QString &instanceUrl, const QString &token)
 {
+    if (!m_builder) {
+        return;
+    }
+
     auto openaicompatibleGroup = m_builder->config().group(u"OpenAICompatible"_s);
     openaicompatibleGroup.writeEntry("instanceUrl", instanceUrl);
     openaicompatibleGroup.writeEntry("accessToken", token);
