@@ -39,6 +39,7 @@ QString redditClientId()
 
 RedditSetup::RedditSetup(QObject *parent)
     : QObject(parent)
+    , m_nam(new QNetworkAccessManager(this))
 {
 }
 
@@ -53,23 +54,24 @@ QCoro::Task<void> RedditSetup::doRegisterReddit()
 
     handler->setCallbackText(i18n("Authentication completed, return to System Settings"));
 
-    connect(handler, &QOAuthHttpServerReplyHandler::tokenRequestErrorOccurred, this, [this, handler](QAbstractOAuth::Error /*error*/, const QString &errorString) {
-        qCWarning(LOG_KONLINEACCOUNTS_REDDIT) << "Reddit OAuth callback error" << errorString;
-        m_builder->fail(errorString);
+    if (!handler->isListening()) {
+        qCWarning(LOG_KONLINEACCOUNTS_REDDIT) << "Could not start local HTTP server for OAuth";
+        m_builder->fail(i18n("Could not start local HTTP server for OAuth"));
         handler->deleteLater();
-    });
+        co_return;
+    }
 
     const QString clientId = redditClientId();
     if (clientId.isEmpty()) {
         qCWarning(LOG_KONLINEACCOUNTS_REDDIT) << "Reddit Client ID is not set";
-        m_builder->fail("Reddit Client ID is not set");
+        m_builder->fail(i18n("Reddit Client ID is not set"));
         handler->deleteLater();
         co_return;
     }
     const QString state = QUuid::createUuid().toString(QUuid::WithoutBraces);
 
     QDesktopServices::openUrl(
-        QUrl(u"https://www.reddit.com/api/v1/authorize?client_id=%1&response_type=code&state=%2&redirect_uri=http://localhost:1234&duration=permanent&scope=identity read"_s.arg(clientId).arg(state)));
+        QUrl(u"https://www.reddit.com/api/v1/authorize?client_id=%1&response_type=code&state=%2&redirect_uri=http://localhost:1234&duration=permanent&scope=identity%20read"_s.arg(clientId).arg(state)));
 
     const QVariantMap values = co_await qCoro(handler, &QOAuthHttpServerReplyHandler::callbackReceived);
 
@@ -80,7 +82,7 @@ QCoro::Task<void> RedditSetup::doRegisterReddit()
 
     if (state != returnedState) {
         qCWarning(LOG_KONLINEACCOUNTS_REDDIT) << "Reddit OAuth callback error: state mismatch";
-        m_builder->fail("State mismatch");
+        m_builder->fail(i18n("State mismatch"));
         handler->deleteLater();
         co_return;
     }
@@ -98,15 +100,13 @@ QCoro::Task<void> RedditSetup::doRegisterReddit()
     QString auth = clientId + ":";
     tokenRequest.setRawHeader("Authorization", "Basic " + auth.toUtf8().toBase64());
 
-    QNetworkAccessManager *nam = new QNetworkAccessManager(this);
-    QNetworkReply *tokenReply = nam->post(tokenRequest, q.toString().toUtf8());
+    QNetworkReply *tokenReply = m_nam->post(tokenRequest, q.toString().toUtf8());
     auto tokenData = co_await tokenReply;
 
     if (tokenReply->error()) {
         qCWarning(LOG_KONLINEACCOUNTS_REDDIT) << "Failed to obtain Reddit token" << tokenReply->errorString() << tokenData;
         m_builder->fail(tokenReply->errorString());
         handler->deleteLater();
-        nam->deleteLater();
         tokenReply->deleteLater();
         co_return;
     }
@@ -116,6 +116,14 @@ QCoro::Task<void> RedditSetup::doRegisterReddit()
     const QString accessToken = authReplyDoc[u"access_token"].toString();
     const QString refreshToken = authReplyDoc[u"refresh_token"].toString();
 
+    if (accessToken.isEmpty() || refreshToken.isEmpty()) {
+        qCWarning(LOG_KONLINEACCOUNTS_REDDIT) << "Missing tokens in Reddit OAuth response";
+        m_builder->fail(i18n("Received invalid tokens from Reddit"));
+        handler->deleteLater();
+        tokenReply->deleteLater();
+        co_return;
+    }
+
     auto redditGroup = m_builder->config().group(u"Reddit"_s);
     redditGroup.writeEntry("clientId", clientId);
     redditGroup.writeEntry("accessToken", accessToken);
@@ -123,7 +131,6 @@ QCoro::Task<void> RedditSetup::doRegisterReddit()
 
     m_builder->finish();
     handler->deleteLater();
-    nam->deleteLater();
     tokenReply->deleteLater();
     co_return;
 }

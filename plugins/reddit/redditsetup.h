@@ -11,6 +11,7 @@
 #include <qqmlregistration.h>
 
 #include <QCoro/QCoroCore>
+#include <QNetworkAccessManager>
 
 #include "accountbuilder.h"
 
@@ -33,4 +34,5 @@ private:
     QCoro::Task<void> doRegisterReddit();
 
     AccountBuilder *m_builder;
+    QNetworkAccessManager *m_nam;
 };

@@ -40,7 +40,7 @@ SetupItem {
         }
 
         Controls.Button {
-            text: "Login to Reddit"
+            text: i18n("Login to Reddit")
 
             enabled: !busy.running
 
