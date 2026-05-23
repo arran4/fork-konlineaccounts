@@ -1,0 +1,9 @@
+{
+    "KPlugin": {
+        "Icon": "internet-services",
+        "Name": "OpenAI Compatible",
+        "Description": "Access OpenAI Compatible APIs"
+    },
+    "X-KOnlineAccounts-SetupModule": "org.kde.konlineaccounts.openaicompatible",
+    "X-KOnlineAccounts-Provides": ["openaicompatible"]
+}
