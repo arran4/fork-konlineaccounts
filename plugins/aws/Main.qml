@@ -30,22 +30,23 @@ SetupItem {
 
             Controls.TextField {
                 id: regionField
-                Kirigami.FormData.label: "Region:"
+                Kirigami.FormData.label: i18n("Region:")
             }
             Controls.TextField {
                 id: accessKeyField
-                Kirigami.FormData.label: "Access Key:"
+                Kirigami.FormData.label: i18n("Access Key:")
             }
             Controls.TextField {
                 id: secretKeyField
-                Kirigami.FormData.label: "Secret Key:"
+                Kirigami.FormData.label: i18n("Secret Key:")
                 echoMode: TextInput.Password
             }
         }
 
         Controls.Button {
-            text: "Save"
+            text: i18n("Save")
             Layout.alignment: Qt.AlignRight
+            enabled: accessKeyField.text.trim() !== "" && secretKeyField.text.trim() !== ""
             onClicked: {
                 setup.save(regionField.text, accessKeyField.text, secretKeyField.text)
             }

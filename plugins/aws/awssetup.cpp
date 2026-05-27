@@ -34,7 +34,7 @@ void AwsSetup::save(const QString &region, const QString &accessKey, const QStri
 
     // Construct the endpoint dynamically based on the region
     QString endpoint = QStringLiteral("https://s3.amazonaws.com");
-    if (!region.isEmpty() && region != u"us-east-1") {
+    if (!region.isEmpty() && region != u"us-east-1"_s) {
         endpoint = QStringLiteral("https://s3.%1.amazonaws.com").arg(region);
     }
 
