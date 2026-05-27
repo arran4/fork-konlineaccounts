@@ -1,0 +1,9 @@
+{
+    "KPlugin": {
+        "Icon": "network-server",
+        "Name": "S3 (Generic)",
+        "Description": "Access S3-compatible storage"
+    },
+    "X-KOnlineAccounts-SetupModule": "org.kde.konlineaccounts.s3",
+    "X-KOnlineAccounts-Provides": ["s3"]
+}
