@@ -1,0 +1,9 @@
+{
+    "KPlugin": {
+        "Icon": "network-server",
+        "Name": "Amazon Web Services",
+        "Description": "Access AWS services including S3"
+    },
+    "X-KOnlineAccounts-SetupModule": "org.kde.konlineaccounts.aws",
+    "X-KOnlineAccounts-Provides": ["aws", "s3"]
+}
